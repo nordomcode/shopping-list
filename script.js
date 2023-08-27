@@ -17,7 +17,7 @@ function createButton(classes) {
     return button;
 }
 
-function addItem(e) {
+function onAddItemSubmit(e) {
     e.preventDefault();
 
     const newItem = itemInput.value
@@ -28,8 +28,17 @@ function addItem(e) {
         return;
     }
 
+    addItemToDOM(newItem);
+    addItemToStorage(newItem);
 
-    //create icon
+    checkUI();
+
+    //clearing the input
+    itemInput.value = ''
+
+}
+
+function addItemToDOM(item) {
     const icon = createIcon('fa-solid fa-xmark');
     //create button
     const button = createButton("remove-item btn-link text-red");
@@ -37,17 +46,27 @@ function addItem(e) {
 
     //Create list element
     const li = document.createElement('li');
-    li.appendChild(document.createTextNode(newItem));
+    li.appendChild(document.createTextNode(item));
    
 
     li.appendChild(button);
 
     //finally adding item to the item list
     itemList.appendChild(li);
-    checkUI();
+}
 
-    //clearing the input
-    itemInput.value = ''
+function addItemToStorage(item) {
+    let itemsFromStorage;
+
+    if (localStorage.getItem('items') === null) {
+        itemsFromStorage = [];
+    } else {
+        itemsFromStorage = JSON.parse(itemsFromStorage.getItem('items'));
+    }
+
+    itemsFromStorage.push(item);
+
+    localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 
 }
 
@@ -95,7 +114,7 @@ function filterItems(e) {
 }
 
 //Event Listeners
-itemForm.addEventListener('submit', addItem);
+itemForm.addEventListener('submit', onAddItemSubmit);
 itemList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearAll);
 filter.addEventListener('input', filterItems)
