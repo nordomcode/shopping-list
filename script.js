@@ -1,8 +1,10 @@
 const itemForm = document.getElementById('item-form');
 const itemInput  = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
+const formBtn = document.querySelector('div.form-control button');
 const clearBtn = document.getElementById('clear')
 const filter = document.getElementById('filter')
+let isEditMode = false
 
 function displayItems() {
     let itemsFromStorage = getItemsFromStorage();
@@ -26,7 +28,7 @@ function createButton(classes) {
 
 function onAddItemSubmit(e) {
     e.preventDefault();
-    checkUI();
+    
 
     const newItem = itemInput.value
 
@@ -37,6 +39,7 @@ function onAddItemSubmit(e) {
     }
     addItemToDOM(newItem);
     addItemToStorage(newItem);
+    checkUI();
     //clearing the input
     itemInput.value = ''
 }
@@ -46,43 +49,48 @@ function addItemToDOM(item) {
     //create button
     const button = createButton("remove-item btn-link text-red");
     button.appendChild(icon);
-
     //Create list element
     const li = document.createElement('li');
     li.appendChild(document.createTextNode(item));
-   
-
     li.appendChild(button);
-
     //finally adding item to the item list
     itemList.appendChild(li);
 }
 
 function addItemToStorage(item) {
     let itemsFromStorage = getItemsFromStorage()
-
     itemsFromStorage.push(item);
-
     localStorage.setItem('items', JSON.stringify(itemsFromStorage));
-
 }
 
 function getItemsFromStorage() {
     let itemsFromStorage;
-
     if (localStorage.getItem('items') === null) {
         itemsFromStorage = [];
     } else {
         itemsFromStorage = JSON.parse(localStorage.getItem('items'));
     }
-
     return itemsFromStorage;
 }
 
 function onClickItem(e) {
     if (e.target.parentElement.classList.contains('remove-item')) {
         removeItem(e.target.parentElement.parentElement);
+    } else {
+        setItemToEdit(e.target);
     }
+}
+
+function setItemToEdit(item) {
+    isEditMode = true;
+    itemList
+        .querySelectorAll('li')
+        .forEach(item => item.classList.remove('edit-mode'));
+    formBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
+    formBtn.style.color = '#228B22';
+    item.classList.add('edit-mode');
+    itemInput.value= item.textContent
+    
 }
 
 function removeItem(item) {
