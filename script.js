@@ -29,19 +29,29 @@ function createButton(classes) {
 function onAddItemSubmit(e) {
     e.preventDefault();
     
-
     const newItem = itemInput.value
-
     //validate input
     if (newItem==='') {
         alert('Pleaase add an item');
         return;
     }
+    //Check for edit mode
+    if (isEditMode) {
+        const itemToEdit = itemList.querySelector('.edit-mode');
+        
+        removeItemFromStorage(itemToEdit.textContent);
+        itemToEdit.classList.remove('edit-mode');
+        itemToEdit.remove();
+        
+        isEditMode = false;
+    } 
+    
     addItemToDOM(newItem);
     addItemToStorage(newItem);
     checkUI();
+    console.log(formBtn.innerHTML);
     //clearing the input
-    itemInput.value = ''
+
 }
 
 function addItemToDOM(item) {
@@ -87,7 +97,7 @@ function setItemToEdit(item) {
         .querySelectorAll('li')
         .forEach(item => item.classList.remove('edit-mode'));
     formBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
-    formBtn.style.color = '#228B22';
+    formBtn.style.backgroundColor = '#228B22';
     item.classList.add('edit-mode');
     itemInput.value= item.textContent
     
@@ -122,6 +132,7 @@ function clearAll() {
 }
 
 function checkUI() {
+    itemInput.value = '';
     const items = itemList.querySelectorAll('li');
     if (items.length === 0 ) {
         clearBtn.style.display = 'none';
@@ -130,6 +141,13 @@ function checkUI() {
     clearBtn.style.display = 'block';
     filter.style.display = 'block';
     }
+    
+    formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+    
+    formBtn.style.backgroundColor = '#333'
+
+    isEditMode = false;
+
 }
 
 function filterItems(e) {
@@ -150,13 +168,13 @@ function filterItems(e) {
 
 function init() {
     //Event Listeners
-itemForm.addEventListener('submit', onAddItemSubmit);
-itemList.addEventListener('click', onClickItem);
-clearBtn.addEventListener('click', clearAll);
-filter.addEventListener('input', filterItems);
-document.addEventListener('DOMContentLoaded', displayItems);
+    itemForm.addEventListener('submit', onAddItemSubmit);
+    itemList.addEventListener('click', onClickItem);
+    clearBtn.addEventListener('click', clearAll);
+    filter.addEventListener('input', filterItems);
+    document.addEventListener('DOMContentLoaded', displayItems);
 
-checkUI();
+    checkUI();
 }
 
 init();
